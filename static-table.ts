@@ -10,7 +10,7 @@ headerDictionary.forEach(
     if (staticTable.has(entry.name) === false) {
       staticTable.set(entry.name, index);
     }
-  }
+  },
 );
 
 export const STATIC_TABLE: ReadonlyMap<string, number> = staticTable;

@@ -13,23 +13,21 @@ export function huffmanEncode(value: string) {
     }
     const codeValue = parseInt(huffmanCode ?? "", 2);
 
-    encoding =
-      (encoding << BigInt(huffmanCode?.length ?? 0)) | BigInt(codeValue);
+    encoding = (encoding << BigInt(huffmanCode?.length ?? 0)) |
+      BigInt(codeValue);
     totalLength += huffmanCode?.length ?? 0;
   }
   const overrun = totalLength % 8;
   if (overrun !== 0) {
     const requiredPadding = 8 - overrun;
-    encoding =
-      (encoding << BigInt(requiredPadding)) |
+    encoding = (encoding << BigInt(requiredPadding)) |
       (2n ** BigInt(requiredPadding) - 1n);
     totalLength += requiredPadding;
   }
-  const bytes =
-    encoding
-      .toString(16)
-      .match(/.{2}/g)
-      ?.map((byte) => parseInt(byte, 16)) ?? [];
+  const bytes = encoding
+    .toString(16)
+    .match(/.{2}/g)
+    ?.map((byte) => parseInt(byte, 16)) ?? [];
 
   const nameLength = Array.from(encodeNumber(totalLength / 8, 7));
   nameLength[0] |= 0x80;

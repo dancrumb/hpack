@@ -1,15 +1,5 @@
-import {
-  assert,
-  assertEquals,
-  assertStrictEquals,
-  assertThrows,
-} from "https://deno.land/std@0.193.0/testing/asserts.ts";
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  it,
-} from "https://deno.land/std@0.193.0/testing/bdd.ts";
+import { assertEquals } from "https://deno.land/std@0.193.0/testing/asserts.ts";
+import { describe, it } from "https://deno.land/std@0.193.0/testing/bdd.ts";
 import { DynamicTable } from "./dynamic-table.ts";
 
 describe("DynamicTable", () => {
