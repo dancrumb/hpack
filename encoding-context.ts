@@ -1,4 +1,6 @@
-import { HUFFMAN_MAP } from "./huffman-map.ts";
+import { DynamicTable } from "./dynamic-table.ts";
+import { huffmanEncode } from "./huffman-encoder.ts";
+import { literalEncode } from "./literal_string_encoder.ts";
 import { STATIC_TABLE, STATIC_TABLE_LENGTH } from "./static-table.ts";
 
 export enum ENCODING_TYPE {
@@ -16,108 +18,50 @@ type EncodingOptions = {
 
 export class EncodingContext {
   readonly staticTable = STATIC_TABLE;
-  readonly dynamicTable: string[] = [];
+  readonly dynamicTable: DynamicTable;
 
-  constructor(private dynamicTableMaxSize = 1024) {}
+  constructor(dynamicTableMaxSize = 1024) {
+    this.dynamicTable = new DynamicTable(dynamicTableMaxSize);
+  }
 
   setMaxTableSize(size: number) {
-    this.dynamicTableMaxSize = size;
+    this.dynamicTable.setMaxSize(size);
   }
 
   get dynamicTableSize(): number {
-    return this.dynamicTable.reduce((sum, entry) => {
-      return sum + (entry.length - 2) + 32; // -2 is for the colon and space;
-    }, 0);
+    return this.dynamicTable.size;
   }
 
-  private addTableEntry(name: string, value: string) {
-    this.dynamicTable.unshift(`${name}: ${value}`);
-    while (this.dynamicTableSize > this.dynamicTableMaxSize) {
-      this.dynamicTable.pop();
+  private getIndex(field: string): number | undefined {
+    const staticIndex = this.staticTable.get(field);
+    if (staticIndex !== undefined) {
+      return staticIndex;
     }
-  }
+    const dynamicIndex = this.dynamicTable.getIndex(field);
 
-  private getDynamicIndex(field: string): number | undefined {
-    const index = this.dynamicTable.indexOf(field);
-    return index >= 0 ? (index + 1 + STATIC_TABLE_LENGTH) : undefined;
-  }
-
-  encodeNumber(value: number, prefix: number): number[] {
-    if (value < (1 << prefix) - 1) {
-      return [value];
+    if (dynamicIndex > 0) {
+      return dynamicIndex + STATIC_TABLE_LENGTH;
     }
-    const result: number[] = [(1 << prefix) - 1];
-    value = value - ((1 << prefix) - 1);
-    while (value > 128) {
-      result.push((value % 128) + 128);
-      value = Math.floor(value / 128);
-    }
-    result.push(value);
-    return result;
-  }
-
-  private literalEncode(value: string) {
-    const result: number[] = [];
-    const nameLength = Array.from(this.encodeNumber(value.length, 7));
-    result.push(...nameLength);
-    const nameBytes = Array.from(new TextEncoder().encode(value));
-    result.push(...nameBytes);
-
-    return result;
-  }
-
-  private huffmanEncode(value: string) {
-    const result: number[] = [];
-
-    let encoding = 0n;
-    let totalLength = 0;
-    for (const char of value) {
-      const huffmanCode = HUFFMAN_MAP.get(char.charCodeAt(0));
-      if (huffmanCode === undefined) {
-        throw new Error(`No encoding for ${char}`);
-      }
-      const codeValue = parseInt(huffmanCode ?? "", 2);
-
-      encoding = (encoding << BigInt(huffmanCode?.length ?? 0)) |
-        BigInt(codeValue);
-      totalLength += huffmanCode?.length ?? 0;
-    }
-    const overrun = totalLength % 8;
-    if (overrun !== 0) {
-      const requiredPadding = 8 - overrun;
-      encoding = encoding << BigInt(requiredPadding) |
-        (2n ** BigInt(requiredPadding) - 1n);
-      totalLength += requiredPadding;
-    }
-    const bytes =
-      encoding.toString(16).match(/.{2}/g)?.map((byte) => parseInt(byte, 16)) ??
-        [];
-
-    const nameLength = Array.from(this.encodeNumber(totalLength / 8, 7));
-    nameLength[0] |= 0x80;
-    result.push(...nameLength);
-    result.push(...bytes);
-
-    return result;
+    return undefined;
   }
 
   encodeHeader(
     headerName: string,
     value: string,
-    { addToIndex = true, huffman = false, neverIndex = false }:
-      EncodingOptions = {
-        addToIndex: true,
-        huffman: false,
-        neverIndex: false,
-      },
+    {
+      addToIndex = true,
+      huffman = false,
+      neverIndex = false,
+    }: EncodingOptions = {
+      addToIndex: true,
+      huffman: false,
+      neverIndex: false,
+    }
   ): number[] {
     const result: number[] = [];
-    const encode = huffman
-      ? this.huffmanEncode.bind(this)
-      : this.literalEncode.bind(this);
+    const encode = huffman ? huffmanEncode : literalEncode;
 
-    const index = this.staticTable.get(`${headerName}: ${value}`) ??
-      this.getDynamicIndex(`${headerName}: ${value}`);
+    const index = this.getIndex(`${headerName}: ${value}`);
     if (index !== undefined) {
       result.push(index | ENCODING_TYPE.INDEXED_ADD);
       return result;
@@ -130,7 +74,7 @@ export class EncodingContext {
           ? ENCODING_TYPE.LITERAL_WITH_INDEXING
           : neverIndex
           ? ENCODING_TYPE.LITERAL_NEVER_INDEXED
-          : ENCODING_TYPE.LITERAL_WITHOUT_INDEXING),
+          : ENCODING_TYPE.LITERAL_WITHOUT_INDEXING)
     );
     if (nameIndex === 0) {
       result.push(...encode(headerName));
@@ -138,7 +82,7 @@ export class EncodingContext {
     result.push(...encode(value));
 
     if (addToIndex) {
-      this.addTableEntry(headerName, value);
+      this.dynamicTable.addEntry(headerName, value);
     }
 
     return result;

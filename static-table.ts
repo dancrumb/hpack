@@ -10,9 +10,9 @@ headerDictionary.forEach(
     if (staticTable.has(entry.name) === false) {
       staticTable.set(entry.name, index);
     }
-  },
+  }
 );
 
 export const STATIC_TABLE: ReadonlyMap<string, number> = staticTable;
 
-export const STATIC_TABLE_LENGTH = headerDictionary.length;
+export const STATIC_TABLE_LENGTH = headerDictionary.length - 1;
