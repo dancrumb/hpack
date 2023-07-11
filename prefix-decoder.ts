@@ -1,6 +1,9 @@
-export function decodeNumber(code: number[], prefix: number): bigint {
-  if (code.length === 1 && code[0] < 1 << (prefix - 1)) {
-    return BigInt(code[0]);
+export function decodeNumber(
+  code: number[],
+  prefix: number,
+): { plaintext: bigint; remainder: number[] } {
+  if (code[0] < 1 << (prefix - 1)) {
+    return { plaintext: BigInt(code[0]), remainder: code.slice(1) };
   }
   let m = 0n;
   let i = BigInt(code.shift() ?? 0) & (2n ** BigInt(prefix) - 1n);
@@ -10,5 +13,5 @@ export function decodeNumber(code: number[], prefix: number): bigint {
     i = i + (octet & 127n) * 2n ** m;
     m = m + 7n;
   } while ((octet & 128n) === 128n);
-  return i;
+  return { plaintext: i, remainder: code };
 }
