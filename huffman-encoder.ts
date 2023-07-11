@@ -1,7 +1,7 @@
 import { HUFFMAN_MAP } from "./huffman-map.ts";
 import { encodeNumber } from "./prefix-encoder.ts";
 
-export function huffmanEncode(value: string) {
+export function huffmanEncode(value: string): number[] {
   const result: number[] = [];
 
   let encoding = 0n;
