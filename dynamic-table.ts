@@ -1,3 +1,6 @@
+import { headerSplit } from "./header-split.ts";
+import { Header } from "./types.ts";
+
 export class DynamicTable {
   readonly table: string[] = [];
 
@@ -48,5 +51,14 @@ export class DynamicTable {
    */
   getIndex(field: string): number {
     return this.table.indexOf(field) + 1;
+  }
+
+  getField(index: number): Header | undefined {
+    const field = this.table[index - 1];
+    if (field === undefined) {
+      return undefined;
+    }
+    const [name, value] = headerSplit(field);
+    return { name, value };
   }
 }

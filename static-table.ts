@@ -1,18 +1,31 @@
 import headerDictionary from "./header-dictionary.json" assert { type: "json" };
 
-const staticTable: Map<string, number> = new Map<string, number>();
+const staticEncodingTable: Map<string, number> = new Map();
+const staticDecodingTable: Map<number, { name: string; value: string }> =
+  new Map();
+
 headerDictionary.forEach(
   (entry: { name: string; value: string | null }, index) => {
     const key = `${entry.name}${
       entry.value === null ? "" : `: ${entry.value}`
     }`;
-    staticTable.set(key, index);
-    if (staticTable.has(entry.name) === false) {
-      staticTable.set(entry.name, index);
+    staticEncodingTable.set(key, index);
+    if (staticEncodingTable.has(entry.name) === false) {
+      staticEncodingTable.set(entry.name, index);
     }
+
+    staticDecodingTable.set(index, {
+      name: entry.name,
+      value: entry.value ?? "",
+    });
   },
 );
 
-export const STATIC_TABLE: ReadonlyMap<string, number> = staticTable;
+export const STATIC_ENCODING_TABLE: ReadonlyMap<string, number> =
+  staticEncodingTable;
+export const STATIC_DECODING_TABLE: ReadonlyMap<
+  number,
+  { name: string; value: string }
+> = staticDecodingTable;
 
 export const STATIC_TABLE_LENGTH = headerDictionary.length - 1;

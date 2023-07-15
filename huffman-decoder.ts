@@ -1,11 +1,11 @@
-import { decodeNumber } from "./prefix-decoder.ts";
+import { prefixDecode } from "./prefix-decoder.ts";
 import { HUFFMAN_ARRAY } from "./huffman-map.ts";
 
 export function huffmanDecode(code: number[]): {
   plaintext: string;
   remainder: number[];
 } {
-  const { plaintext: length, remainder: bytes } = decodeNumber(code, 7);
+  const { plaintext: length, remainder: bytes } = prefixDecode(code, 7);
   const [huffmancode, remainder] = [
     bytes.slice(0, Number(length)),
     bytes.slice(Number(length)),

@@ -20,16 +20,16 @@ export class HPackEncoderStream implements TransformStream<string, number[]> {
       transform: (chunk, controller) => {
         const previous = queue.shift() ?? "";
 
-        `${previous}${chunk}`.split("\n")
+        `${previous}${chunk}`
+          .split("\n")
           .filter((line) => line.length > 0)
           .forEach((line) => queue.push(line));
 
         const last = chunk.at(-1) === "\n" ? null : queue.pop() ?? null;
 
         let line = queue.shift();
-        while ((line) !== undefined) {
+        while (line !== undefined) {
           const [name, value] = line.split(": ");
-          console.log({ name, value });
           controller.enqueue(encodingContext.encodeHeader(name, value));
           line = queue.shift();
         }
@@ -68,7 +68,8 @@ const textOut = Deno.stdout.writable;
 
 const packer = new HPackEncoderStream();
 
-textRead.pipeThrough(textStream)
+textRead
+  .pipeThrough(textStream)
   .pipeThrough(packer)
   .pipeThrough(toUint8Array)
   .pipeTo(textOut);

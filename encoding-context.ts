@@ -1,7 +1,7 @@
 import { DynamicTable } from "./dynamic-table.ts";
 import { huffmanEncode } from "./huffman-encoder.ts";
 import { literalEncode } from "./literal_string_encoder.ts";
-import { STATIC_TABLE, STATIC_TABLE_LENGTH } from "./static-table.ts";
+import { STATIC_ENCODING_TABLE, STATIC_TABLE_LENGTH } from "./static-table.ts";
 
 export enum ENCODING_TYPE {
   INDEXED_ADD = 0x80,
@@ -17,7 +17,7 @@ type EncodingOptions = {
 };
 
 export class EncodingContext {
-  readonly staticTable = STATIC_TABLE;
+  readonly staticTable = STATIC_ENCODING_TABLE;
   readonly dynamicTable: DynamicTable;
 
   constructor(dynamicTableMaxSize = 1024) {
