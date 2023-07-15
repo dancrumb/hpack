@@ -1,10 +1,8 @@
 import { prefixDecode } from "./prefix-decoder.ts";
 import { HUFFMAN_ARRAY } from "./huffman-map.ts";
+import { DecodeResult, PlainText } from "./types.ts";
 
-export function huffmanDecode(code: number[]): {
-  plaintext: string;
-  remainder: number[];
-} {
+export function huffmanDecode(code: number[]): DecodeResult<PlainText<string>> {
   const { plaintext: length, remainder: bytes } = prefixDecode(code, 7);
   const [huffmancode, remainder] = [
     bytes.slice(0, Number(length)),

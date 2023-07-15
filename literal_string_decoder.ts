@@ -1,9 +1,7 @@
 import { prefixDecode } from "./prefix-decoder.ts";
+import { DecodeResult, PlainText } from "./types.ts";
 
-export function literalDecode(code: number[]): {
-  plaintext: string;
-  remainder: number[];
-} {
+export function literalDecode(code: number[]): DecodeResult<PlainText<string>> {
   const { plaintext: length, remainder: codetext } = prefixDecode(code, 7);
   const [string, remainder] = [
     codetext.slice(0, Number(length)),
