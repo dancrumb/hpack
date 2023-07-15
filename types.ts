@@ -3,6 +3,6 @@ export type Header = {
   value: string;
 };
 
-export type PlainText<T> = { plaintext: T };
+export type PlainText<T> = { plaintext: T | null };
 
 export type DecodeResult<T> = T & { remainder: number[] };

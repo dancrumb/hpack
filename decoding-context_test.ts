@@ -8,22 +8,23 @@ const assertDecodesCorrectly = (
   decoder: DecodingContext,
   code: number[],
   expectedResults: Header[],
+  expectedRemainder: number[] = []
 ) => {
   let request = decoder.decodeHeader(code);
   expectedResults.forEach((expectedResult) => {
     assertEquals(
       request.name,
       expectedResult.name,
-      `Name matches ${expectedResult.name}`,
+      `Name matches ${expectedResult.name}`
     );
     assertEquals(
       request.value,
       expectedResult.value,
-      `Value matches ${expectedResult.value}`,
+      `Value matches ${expectedResult.value}`
     );
     request = decoder.decodeHeader(request.remainder);
   });
-  assertEquals(request.remainder.length, 0, "No remainder left");
+  assertEquals(request.remainder, expectedRemainder, "Remainder");
 };
 
 describe("DecodingContext", () => {
@@ -38,7 +39,7 @@ describe("DecodingContext", () => {
         { name: ":scheme", value: "http" },
         { name: ":path", value: "/" },
         { name: ":authority", value: "www.example.com" },
-      ],
+      ]
     );
     assertDecodesCorrectly(
       decoder,
@@ -49,7 +50,7 @@ describe("DecodingContext", () => {
         { name: ":path", value: "/" },
         { name: ":authority", value: "www.example.com" },
         { name: "cache-control", value: "no-cache" },
-      ],
+      ]
     );
     assertDecodesCorrectly(
       decoder,
@@ -62,7 +63,7 @@ describe("DecodingContext", () => {
         { name: ":path", value: "/index.html" },
         { name: ":authority", value: "www.example.com" },
         { name: "custom-key", value: "custom-value" },
-      ],
+      ]
     );
   });
 
@@ -78,7 +79,7 @@ describe("DecodingContext", () => {
         { name: ":scheme", value: "http" },
         { name: ":path", value: "/" },
         { name: ":authority", value: "www.example.com" },
-      ],
+      ]
     );
     assertDecodesCorrectly(
       decoder,
@@ -89,7 +90,7 @@ describe("DecodingContext", () => {
         { name: ":path", value: "/" },
         { name: ":authority", value: "www.example.com" },
         { name: "cache-control", value: "no-cache" },
-      ],
+      ]
     );
     assertDecodesCorrectly(
       decoder,
@@ -102,7 +103,7 @@ describe("DecodingContext", () => {
         { name: ":path", value: "/index.html" },
         { name: ":authority", value: "www.example.com" },
         { name: "custom-key", value: "custom-value" },
-      ],
+      ]
     );
   });
 
@@ -123,7 +124,7 @@ describe("DecodingContext", () => {
         { name: "cache-control", value: "private" },
         { name: "date", value: "Mon, 21 Oct 2013 20:13:21 GMT" },
         { name: "location", value: "https://www.example.com" },
-      ],
+      ]
     );
     assertDecodesCorrectly(decoder, hexDumpToArray(`4803 3330 37c1 c0bf`), [
       { name: ":status", value: "307" },
@@ -151,7 +152,7 @@ describe("DecodingContext", () => {
           name: "set-cookie",
           value: "foo=ASDJKHQKBZXOQWEOPIUAXQWEOIU; max-age=3600; version=1",
         },
-      ],
+      ]
     );
   });
 
@@ -171,7 +172,7 @@ describe("DecodingContext", () => {
         { name: "cache-control", value: "private" },
         { name: "date", value: "Mon, 21 Oct 2013 20:13:21 GMT" },
         { name: "location", value: "https://www.example.com" },
-      ],
+      ]
     );
     assertDecodesCorrectly(decoder, hexDumpToArray(`4883 640e ffc1 c0bf`), [
       { name: ":status", value: "307" },
@@ -197,7 +198,22 @@ describe("DecodingContext", () => {
           name: "set-cookie",
           value: "foo=ASDJKHQKBZXOQWEOPIUAXQWEOIU; max-age=3600; version=1",
         },
+      ]
+    );
+  });
+
+  it("handles incomplete data", () => {
+    const decoder = new DecodingContext();
+    assertDecodesCorrectly(
+      decoder,
+      hexDumpToArray(`8286 8441 0f77 77`),
+      [
+        { name: ":method", value: "GET" },
+        { name: ":scheme", value: "http" },
+        { name: ":path", value: "/" },
+        { name: "", value: "" },
       ],
+      hexDumpToArray(`41 0f77 77`)
     );
   });
 });

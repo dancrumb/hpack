@@ -3,7 +3,7 @@ import { describe, it } from "https://deno.land/std@0.193.0/testing/bdd.ts";
 import { literalDecode } from "./literal_string_decoder.ts";
 
 describe("literalDecode", () => {
-  it("encodes a string", () => {
+  it("decodes a string", () => {
     assertEquals(
       literalDecode([
         0x0a,
@@ -40,7 +40,7 @@ describe("literalDecode", () => {
     );
   });
 
-  it("encodes a string with extra bytes", () => {
+  it("decodes a string with extra bytes", () => {
     assertEquals(
       literalDecode([
         0x0a,
@@ -77,5 +77,15 @@ describe("literalDecode", () => {
       ]),
       { plaintext: "custom-value", remainder: [0x99] },
     );
+  });
+  it("decodes a string with insufficient bytes", () => {
+    assertEquals(literalDecode([0x0a, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d]), {
+      plaintext: null,
+      remainder: [0x0a, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d],
+    });
+    assertEquals(literalDecode([0x0c, 0x63, 0x75, 0x73, 0x74, 0x6f]), {
+      plaintext: null,
+      remainder: [0x0c, 0x63, 0x75, 0x73, 0x74, 0x6f],
+    });
   });
 });

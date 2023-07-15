@@ -8,6 +8,9 @@ export function literalDecode(code: number[]): DecodeResult<PlainText<string>> {
     codetext.slice(Number(length)),
   ];
 
+  if (string.length < Number(length)) {
+    return { plaintext: null, remainder: code };
+  }
   return {
     plaintext: new TextDecoder().decode(new Uint8Array(string).buffer),
     remainder,

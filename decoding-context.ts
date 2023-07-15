@@ -65,7 +65,7 @@ export class DecodingContext {
 
   private decodeHeaderName(
     code: number[],
-    indexPrefixLength: number,
+    indexPrefixLength: number
   ): DecodeResult<PlainText<string>> {
     const decodedIndex = prefixDecode(code, indexPrefixLength);
     let headerName = "";
@@ -74,6 +74,9 @@ export class DecodingContext {
     if (index === 0) {
       // Literal header name
       const decodedHeaderName = stringDecode(remainingCode);
+      if (decodedHeaderName.plaintext === null) {
+        return { plaintext: null, remainder: code };
+      }
       headerName = decodedHeaderName.plaintext;
       remainingCode = decodedHeaderName.remainder;
     } else {
@@ -91,18 +94,24 @@ export class DecodingContext {
 
   private handleLiteralWithIndexing(
     code: number[],
-    indexPrefixLength: number,
+    indexPrefixLength: number
   ): HeaderDecodingResult {
     if (code.length === 0) {
       return { name: "", value: "", remainder: [] };
     }
     // Literal Header Field with Incremental Indexing
     const headerDecodeResult = this.decodeHeaderName(code, indexPrefixLength);
+    if (headerDecodeResult.plaintext === null) {
+      return { name: "", value: "", remainder: code };
+    }
     const headerName = headerDecodeResult.plaintext;
     let remainingCode = headerDecodeResult.remainder;
 
     const decodedHeaderValue = stringDecode(remainingCode);
 
+    if (decodedHeaderValue.plaintext === null) {
+      return { name: "", value: "", remainder: code };
+    }
     const value = decodedHeaderValue.plaintext;
     remainingCode = decodedHeaderValue.remainder;
 

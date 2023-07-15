@@ -2,7 +2,7 @@ import { DecodeResult, PlainText } from "./types.ts";
 
 export function prefixDecode(
   code: ReadonlyArray<number>,
-  prefix: number
+  prefix: number,
 ): DecodeResult<PlainText<bigint>> {
   const remainder = [...code];
   let i = BigInt(remainder.shift() ?? 0) & (2n ** BigInt(prefix) - 1n);
