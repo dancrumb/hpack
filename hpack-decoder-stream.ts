@@ -24,7 +24,7 @@ export class HPackDecoderStream implements TransformStream<number[], string> {
           const { name, value, remainder } = decodingContext.decodeHeader(
             queue,
           );
-          if (name === null) {
+          if (name === "") {
             break;
           }
           controller.enqueue(`${name}: ${value}`);
@@ -36,7 +36,7 @@ export class HPackDecoderStream implements TransformStream<number[], string> {
           const { name, value, remainder } = decodingContext.decodeHeader(
             queue,
           );
-          if (name === null) {
+          if (name === "") {
             break;
           }
           controller.enqueue(`${name}: ${value}`);
