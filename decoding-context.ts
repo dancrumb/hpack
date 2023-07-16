@@ -65,7 +65,7 @@ export class DecodingContext {
 
   private decodeHeaderName(
     code: number[],
-    indexPrefixLength: number
+    indexPrefixLength: number,
   ): DecodeResult<PlainText<string>> {
     const decodedIndex = prefixDecode(code, indexPrefixLength);
     let headerName = "";
@@ -94,7 +94,7 @@ export class DecodingContext {
 
   private handleLiteralWithIndexing(
     code: number[],
-    indexPrefixLength: number
+    indexPrefixLength: number,
   ): HeaderDecodingResult {
     if (code.length === 0) {
       return { name: "", value: "", remainder: [] };
