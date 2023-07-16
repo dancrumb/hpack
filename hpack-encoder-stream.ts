@@ -52,24 +52,3 @@ export class HPackEncoderStream implements TransformStream<string, number[]> {
     this.writable = this.transformer.writable;
   }
 }
-
-const toUint8Array = new TransformStream<number[], Uint8Array>({
-  transform: (chunk, controller) => {
-    controller.enqueue(new Uint8Array(chunk));
-  },
-});
-
-const textStream = new TextDecoderStream();
-
-const text = await Deno.open("./example.txt", { read: true });
-const textRead = text.readable;
-
-const textOut = Deno.stdout.writable;
-
-const packer = new HPackEncoderStream();
-
-textRead
-  .pipeThrough(textStream)
-  .pipeThrough(packer)
-  .pipeThrough(toUint8Array)
-  .pipeTo(textOut);
