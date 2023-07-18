@@ -1,3 +1,10 @@
+## 1.0.1 (2023-07-17)
+
+### Refactor
+
+- tighten up some typing
+- **encoders/decoders**: move encoders and decoders into their own directories
+
 ## 1.0.0 (2023-07-17)
 
 ### Feat
