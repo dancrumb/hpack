@@ -1,6 +1,6 @@
 import { assertEquals } from "https://deno.land/std@0.193.0/testing/asserts.ts";
 import { describe, it } from "https://deno.land/std@0.193.0/testing/bdd.ts";
-import { huffmanDecode } from "./huffman-decoder.ts";
+import { huffmanDecode } from "./huffman_decoder.ts";
 
 describe("huffmanDecode", () => {
   it("decodes an empty string", () => {

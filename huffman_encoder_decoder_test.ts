@@ -1,10 +1,10 @@
 import { assertEquals } from "https://deno.land/std@0.193.0/testing/asserts.ts";
 import { describe, it } from "https://deno.land/std@0.193.0/testing/bdd.ts";
-import { huffmanEncode } from "./huffman-encoder.ts";
-import { huffmanDecode } from "./huffman-decoder.ts";
+import { huffmanDecode } from "./decoders/huffman_decoder.ts";
+import { huffmanEncode } from "./encoders/huffman_encoder.ts";
 
 describe("huffmanEncode/huffmanDecode", () => {
-  it("encodes then decodesan empty string", () => {
+  it("encodes then decodes an empty string", () => {
     assertEquals(huffmanDecode(huffmanEncode("")), {
       plaintext: "",
       remainder: [],

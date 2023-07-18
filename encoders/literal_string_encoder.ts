@@ -1,4 +1,4 @@
-import { encodeNumber } from "./prefix-encoder.ts";
+import { encodeNumber } from "./prefix_encoder.ts";
 
 export function literalEncode(value: string) {
   const result: number[] = [];

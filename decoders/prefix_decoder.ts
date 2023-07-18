@@ -1,4 +1,4 @@
-import { DecodeResult, PlainText } from "./types.ts";
+import { DecodeResult, PlainText } from "../types.ts";
 
 export function prefixDecode(
   code: ReadonlyArray<number>,

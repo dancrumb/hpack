@@ -1,7 +1,7 @@
+import { huffmanDecode } from "./decoders/huffman_decoder.ts";
+import { literalDecode } from "./decoders/literal_string_decoder.ts";
+import { prefixDecode } from "./decoders/prefix_decoder.ts";
 import { DynamicTable } from "./dynamic-table.ts";
-import { huffmanDecode } from "./huffman-decoder.ts";
-import { literalDecode } from "./literal_string_decoder.ts";
-import { prefixDecode } from "./prefix-decoder.ts";
 import { STATIC_DECODING_TABLE, STATIC_TABLE_LENGTH } from "./static-table.ts";
 import { DecodeResult, Header, PlainText } from "./types.ts";
 
@@ -68,7 +68,7 @@ export class DecodingContext {
 
   private decodeHeaderName(
     code: number[],
-    indexPrefixLength: number
+    indexPrefixLength: number,
   ): DecodeResult<PlainText<string>> {
     const decodedIndex = prefixDecode(code, indexPrefixLength);
     let headerName = "";
@@ -97,7 +97,7 @@ export class DecodingContext {
 
   private handleLiteralWithIndexing(
     code: number[],
-    indexPrefixLength: number
+    indexPrefixLength: number,
   ): HeaderDecodingResult {
     if (code.length === 0) {
       return { name: "", value: "", remainder: [] };

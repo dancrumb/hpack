@@ -53,8 +53,6 @@ set-cookie: foo=ASDJKHQKBZXOQWEOPIUAXQWEOIU; max-age=3600; version=1`)
   .pipeThrough(decodingStream())
   .pipeTo(arrayStream);
 
-console.log({ headers });
-
 Deno.test("stream", () => {
   assertEquals(headers, [
     ":status: 302",

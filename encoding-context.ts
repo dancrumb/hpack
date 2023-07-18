@@ -1,6 +1,6 @@
 import { DynamicTable } from "./dynamic-table.ts";
-import { huffmanEncode } from "./huffman-encoder.ts";
-import { literalEncode } from "./literal_string_encoder.ts";
+import { huffmanEncode } from "./encoders/huffman_encoder.ts";
+import { literalEncode } from "./encoders/literal_string_encoder.ts";
 import { STATIC_ENCODING_TABLE, STATIC_TABLE_LENGTH } from "./static-table.ts";
 
 export enum ENCODING_TYPE {

@@ -1,5 +1,14 @@
 {
   "tasks": {
     "dev": "deno run --watch main.ts"
+  },
+  "fmt": {
+    "include": ["**/*.ts"]
+  },
+  "lint": {
+    "include": ["**/*.ts"],
+    "rules": {
+      "tags": ["deno-lint", "recommended"]
+    }
   }
 }

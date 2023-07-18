@@ -1,6 +1,6 @@
 import { assertEquals } from "https://deno.land/std@0.193.0/testing/asserts.ts";
 import { describe, it } from "https://deno.land/std@0.193.0/testing/bdd.ts";
-import { prefixDecode } from "./prefix-decoder.ts";
+import { prefixDecode } from "./prefix_decoder.ts";
 
 describe("decodeNumber", () => {
   it("decode numbers with a prefix", () => {
