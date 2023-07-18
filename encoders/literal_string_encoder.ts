@@ -1,6 +1,7 @@
+import { Encoder } from "../types.ts";
 import { encodeNumber } from "./prefix_encoder.ts";
 
-export function literalEncode(value: string) {
+export const literalEncode: Encoder = (value: string) => {
   const result: number[] = [];
   const nameLength = Array.from(encodeNumber(value.length, 7));
   result.push(...nameLength);
@@ -8,4 +9,4 @@ export function literalEncode(value: string) {
   result.push(...nameBytes);
 
   return result;
-}
+};

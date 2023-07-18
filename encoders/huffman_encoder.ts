@@ -1,7 +1,9 @@
+import { hexDumpToArray } from "../hexdump-to-array.ts";
 import { HUFFMAN_MAP } from "../huffman-map.ts";
+import { Encoder } from "../types.ts";
 import { encodeNumber } from "./prefix_encoder.ts";
 
-export function huffmanEncode(value: string): number[] {
+export const huffmanEncode: Encoder = (value: string): number[] => {
   const result: number[] = [];
 
   let encoding = 0n;
@@ -11,28 +13,22 @@ export function huffmanEncode(value: string): number[] {
     if (huffmanCode === undefined) {
       throw new Error(`No encoding for ${char}`);
     }
-    const codeValue = parseInt(huffmanCode ?? "", 2);
+    const codeValue = parseInt(huffmanCode, 2);
 
-    encoding = (encoding << BigInt(huffmanCode?.length ?? 0)) |
-      BigInt(codeValue);
-    totalLength += huffmanCode?.length ?? 0;
+    encoding = (encoding << BigInt(huffmanCode.length)) | BigInt(codeValue);
+    totalLength += huffmanCode.length;
   }
   const overrun = totalLength % 8;
   if (overrun !== 0) {
-    const requiredPadding = 8 - overrun;
-    encoding = (encoding << BigInt(requiredPadding)) |
-      (2n ** BigInt(requiredPadding) - 1n);
-    totalLength += requiredPadding;
+    const requiredPadding = BigInt(8 - overrun);
+    encoding = (encoding << requiredPadding) | (2n ** requiredPadding - 1n);
+    totalLength += Number(requiredPadding);
   }
-  const bytes = encoding
-    .toString(16)
-    .match(/.{2}/g)
-    ?.map((byte) => parseInt(byte, 16)) ?? [];
+  const bytes = hexDumpToArray(encoding.toString(16));
 
-  const nameLength = Array.from(encodeNumber(totalLength / 8, 7));
+  const nameLength = encodeNumber(totalLength / 8, 7);
   nameLength[0] |= 0x80;
-  result.push(...nameLength);
-  result.push(...bytes);
+  result.push(...nameLength, ...bytes);
 
   return result;
-}
+};

@@ -1,8 +1,8 @@
 import { HUFFMAN_ARRAY } from "../huffman-map.ts";
-import { DecodeResult, PlainText } from "../types.ts";
+import { Decoder } from "../types.ts";
 import { prefixDecode } from "./prefix_decoder.ts";
 
-export function huffmanDecode(code: number[]): DecodeResult<PlainText<string>> {
+export const huffmanDecode: Decoder = (code: number[]) => {
   const { plaintext: length, remainder: bytes } = prefixDecode(code, 7);
   const [huffmancode, remainder] = [
     bytes.slice(0, Number(length)),
@@ -12,12 +12,13 @@ export function huffmanDecode(code: number[]): DecodeResult<PlainText<string>> {
   let plaintext = "";
   for (const byte of huffmancode) {
     for (const bit of byte.toString(2).padStart(8, "0")) {
-      treeIndex = bit === "0" ? treeIndex * 2 + 1 : treeIndex * 2 + 2;
-      if (HUFFMAN_ARRAY[treeIndex] !== undefined) {
-        plaintext += String.fromCharCode(HUFFMAN_ARRAY[treeIndex] ?? 0);
+      treeIndex = treeIndex * 2 + (bit === "0" ? 1 : 2);
+      const charCode = HUFFMAN_ARRAY[treeIndex];
+      if (charCode !== undefined) {
+        plaintext += String.fromCharCode(charCode);
         treeIndex = 0;
       }
     }
   }
   return { plaintext, remainder };
-}
+};

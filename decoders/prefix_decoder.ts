@@ -1,9 +1,9 @@
-import { DecodeResult, PlainText } from "../types.ts";
+import { Decoder } from "../types.ts";
 
-export function prefixDecode(
+export const prefixDecode: Decoder<bigint> = (
   code: ReadonlyArray<number>,
   prefix: number,
-): DecodeResult<PlainText<bigint>> {
+) => {
   const remainder = [...code];
   let i = BigInt(remainder.shift() ?? 0) & (2n ** BigInt(prefix) - 1n);
   if (i < 2 ** prefix - 1) {
@@ -17,4 +17,4 @@ export function prefixDecode(
     m = m + 7n;
   } while ((octet & 128n) === 128n);
   return { plaintext: i, remainder };
-}
+};

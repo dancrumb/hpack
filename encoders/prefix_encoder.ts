@@ -1,4 +1,9 @@
-export function encodeNumber(value: number, prefix: number): number[] {
+import { Encoder } from "../types.ts";
+
+export const encodeNumber: Encoder<number> = (
+  value: number,
+  prefix: number,
+): number[] => {
   if (value < (1 << prefix) - 1) {
     return [value];
   }
@@ -10,4 +15,4 @@ export function encodeNumber(value: number, prefix: number): number[] {
   }
   result.push(value);
   return result;
-}
+};

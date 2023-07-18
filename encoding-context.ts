@@ -2,6 +2,7 @@ import { DynamicTable } from "./dynamic-table.ts";
 import { huffmanEncode } from "./encoders/huffman_encoder.ts";
 import { literalEncode } from "./encoders/literal_string_encoder.ts";
 import { STATIC_ENCODING_TABLE, STATIC_TABLE_LENGTH } from "./static-table.ts";
+import { Encoder } from "./types.ts";
 
 export enum ENCODING_TYPE {
   INDEXED_ADD = 0x80,
@@ -48,21 +49,17 @@ export class EncodingContext {
     return undefined;
   }
 
+  /**
+   * Given the name and value of a header field, returns an array of bytes representing the encoded header
+   */
   encodeHeader(
     headerName: string,
     value: string,
-    {
-      addToIndex = true,
-      huffman = false,
-      neverIndex = false,
-    }: EncodingOptions = {
-      addToIndex: true,
-      huffman: false,
-      neverIndex: false,
-    }
+    options: EncodingOptions = {}
   ): number[] {
+    const { addToIndex = true, huffman = false, neverIndex = false } = options;
     const result: number[] = [];
-    const encode = huffman ? huffmanEncode : literalEncode;
+    const encode: Encoder<string> = huffman ? huffmanEncode : literalEncode;
 
     const index = this.getIndex(`${headerName}: ${value}`);
     if (index !== undefined) {
@@ -70,15 +67,19 @@ export class EncodingContext {
       return result;
     }
 
+    let indexingFlag: ENCODING_TYPE;
+    if (addToIndex) {
+      if (neverIndex) {
+        indexingFlag = ENCODING_TYPE.LITERAL_NEVER_INDEXED;
+      } else {
+        indexingFlag = ENCODING_TYPE.LITERAL_WITH_INDEXING;
+      }
+    } else {
+      indexingFlag = ENCODING_TYPE.LITERAL_WITHOUT_INDEXING;
+    }
+
     const nameIndex = this.staticTable.get(headerName) ?? 0;
-    result.push(
-      nameIndex |
-        (addToIndex
-          ? ENCODING_TYPE.LITERAL_WITH_INDEXING
-          : neverIndex
-          ? ENCODING_TYPE.LITERAL_NEVER_INDEXED
-          : ENCODING_TYPE.LITERAL_WITHOUT_INDEXING)
-    );
+    result.push(nameIndex | indexingFlag);
     if (nameIndex === 0) {
       result.push(...encode(headerName));
     }

@@ -68,7 +68,7 @@ export class DecodingContext {
 
   private decodeHeaderName(
     code: number[],
-    indexPrefixLength: number,
+    indexPrefixLength: number
   ): DecodeResult<PlainText<string>> {
     const decodedIndex = prefixDecode(code, indexPrefixLength);
     let headerName = "";
@@ -97,7 +97,7 @@ export class DecodingContext {
 
   private handleLiteralWithIndexing(
     code: number[],
-    indexPrefixLength: number,
+    indexPrefixLength: number
   ): HeaderDecodingResult {
     if (code.length === 0) {
       return { name: "", value: "", remainder: [] };
@@ -123,6 +123,13 @@ export class DecodingContext {
     return { name: headerName, value, remainder: remainingCode };
   }
 
+  /**
+   * Given an array of HPACK encoded bytes, returns the name and value of the header, along with any bytes
+   * that were not used.
+   *
+   * If insufficient bytes are provided, the header name and value will be empty strings and the remainder will be the same
+   * as the passed in array
+   */
   decodeHeader(code: number[]): HeaderDecodingResult {
     const firstByte = code[0];
     const isIndexedHeader = (firstByte & 0x80) === 0x80;
