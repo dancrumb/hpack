@@ -19,6 +19,9 @@ function stringDecode(code: number[]): DecodeResult<PlainText<string>> {
   return useHuffman ? huffmanDecode(code) : literalDecode(code);
 }
 
+/**
+ * This is the decoding context for HPACK. When used for HTTP/2, you should create a new context for each connection
+ */
 export class DecodingContext {
   readonly staticTable = STATIC_DECODING_TABLE;
   readonly dynamicTable: DynamicTable;
@@ -65,7 +68,7 @@ export class DecodingContext {
 
   private decodeHeaderName(
     code: number[],
-    indexPrefixLength: number,
+    indexPrefixLength: number
   ): DecodeResult<PlainText<string>> {
     const decodedIndex = prefixDecode(code, indexPrefixLength);
     let headerName = "";
@@ -94,7 +97,7 @@ export class DecodingContext {
 
   private handleLiteralWithIndexing(
     code: number[],
-    indexPrefixLength: number,
+    indexPrefixLength: number
   ): HeaderDecodingResult {
     if (code.length === 0) {
       return { name: "", value: "", remainder: [] };

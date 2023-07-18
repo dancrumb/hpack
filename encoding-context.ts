@@ -16,6 +16,9 @@ type EncodingOptions = {
   neverIndex?: boolean;
 };
 
+/**
+ * This is the encoding context for HPACK. When used for HTTP/2, you should create a new context for each connection
+ */
 export class EncodingContext {
   readonly staticTable = STATIC_ENCODING_TABLE;
   readonly dynamicTable: DynamicTable;
@@ -56,7 +59,7 @@ export class EncodingContext {
       addToIndex: true,
       huffman: false,
       neverIndex: false,
-    },
+    }
   ): number[] {
     const result: number[] = [];
     const encode = huffman ? huffmanEncode : literalEncode;
@@ -74,7 +77,7 @@ export class EncodingContext {
           ? ENCODING_TYPE.LITERAL_WITH_INDEXING
           : neverIndex
           ? ENCODING_TYPE.LITERAL_NEVER_INDEXED
-          : ENCODING_TYPE.LITERAL_WITHOUT_INDEXING),
+          : ENCODING_TYPE.LITERAL_WITHOUT_INDEXING)
     );
     if (nameIndex === 0) {
       result.push(...encode(headerName));
