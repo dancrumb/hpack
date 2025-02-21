@@ -1,5 +1,5 @@
 import { DecodingContext } from "./decoding-context.ts";
-import headerDictionary from "./header-dictionary.json" assert { type: "json" };
+import headerDictionary from "./header-dictionary.json" with { type: "json" };
 
 const headerMap = new Map<string, number>();
 headerDictionary.forEach((entry, index) => {
