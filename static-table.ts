@@ -1,4 +1,4 @@
-import headerDictionary from "./header-dictionary.json" assert { type: "json" };
+import headerDictionary from "./header-dictionary.json" with { type: "json" };
 
 const staticEncodingTable: Map<string, number> = new Map();
 const staticDecodingTable: Map<number, { name: string; value: string }> =
